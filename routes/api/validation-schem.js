@@ -10,8 +10,11 @@ const schemaCreateContact = Joi.object({
     phone: Joi.string()
         .pattern(new RegExp('[0-9]')),
         
-    email: Joi.string()
+    email: Joi.string(),
+
+    favorite: Joi.boolean()
 })
+
 
 const schemaMongoId = Joi.object({
     contactId: Joi.objectId().required()
