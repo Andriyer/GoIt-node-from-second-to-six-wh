@@ -1,4 +1,5 @@
 const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi)
 
 const schemaCreateContact = Joi.object({
     name: Joi.string()
@@ -9,7 +10,14 @@ const schemaCreateContact = Joi.object({
     phone: Joi.string()
         .pattern(new RegExp('[0-9]')),
         
-    email: Joi.string()
+    email: Joi.string(),
+
+    favorite: Joi.boolean()
 })
 
-module.exports = {schemaCreateContact}
+
+const schemaMongoId = Joi.object({
+    contactId: Joi.objectId().required()
+})
+
+module.exports = {schemaCreateContact, schemaMongoId}

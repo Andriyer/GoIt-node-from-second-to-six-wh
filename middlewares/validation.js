@@ -4,11 +4,23 @@ const validateBody = (schema) => async (req, res, next) => {
         next()
     }
     catch (err) { 
+        return res.status(400).json({ status: 'error', code: 400, message: err.message })
+    }
+
+}
+
+const validateParams = (schema) => async (req, res, next) => {
+    try {
+        await schema.validateAsync(req.params);
+        next()
+    }
+    catch (err) { 
         return res.status(400).json({ status: 'error', code: 404, message: err.message })
     }
 
 }
 
-module.exports  = {validateBody}
+
+module.exports  = {validateBody, validateParams}
 
 
