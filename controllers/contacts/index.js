@@ -39,4 +39,19 @@ const listContacts = async (req, res, next) => {
     return res.status(404).json({ status: 'error', code: 404, message: 'Not found' })
   }
 
-    module.exports = {listContacts, getContactById, addContact, removeContact, updateContact}
+  const updateFavorite = async (req, res, next) => {
+    const contact = await contactsRepository
+    .findByIdAndUpdate(req.params.contactId, req.body)
+    if (contact){
+      res.json({ status: 'success', code: 200, payload: {contact} })
+    }
+    return res.status(404)
+    .json({ status: 'error', code: 404, message: 'Not found' })
+  }
+
+    module.exports = {listContacts, 
+        getContactById, 
+        addContact, 
+        removeContact, 
+        updateContact, 
+        updateFavorite}

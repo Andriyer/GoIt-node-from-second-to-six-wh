@@ -25,8 +25,9 @@ const updateContact = async (contactId, body) => {
   return result
 }
 
-const updateContactFavorite = async (contactId, body) => {
-    const result = await Contact.findOneAndUpdate({_id: contactId}, {...body})
+const updateFavorite = async (contactId, body) => {
+    const result = await Contact
+    .findByIdAndUpdate({_id: contactId}, {...body}, {new: true})
     return result
   }
 
@@ -36,4 +37,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  updateFavorite,
 }

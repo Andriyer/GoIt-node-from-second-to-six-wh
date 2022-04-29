@@ -1,5 +1,5 @@
 const express = require('express')
-const {listContacts, getContactById, addContact, removeContact, updateContact, updateContactFavorite} = require('../../controllers/contacts')
+const {listContacts, getContactById, addContact, removeContact, updateContact, updateFavorite} = require('../../controllers/contacts')
 const {schemaCreateContact, schemaMongoId} = require('./validation-schem')
 const {validateBody, validateParams} = require('../../middlewares/validation')
 
@@ -15,7 +15,7 @@ router.delete('/:contactId', validateParams(schemaMongoId), removeContact)
 
 router.put('/:contactId', [validateParams(schemaMongoId), validateBody(schemaCreateContact)], updateContact)
 
-router.patch('/:contactId/favorite', [validateParams(schemaMongoId), validateBody(schemaCreateContact)], updateContact)
+router.patch('/:contactId/favorite', [validateParams(schemaMongoId), validateBody(schemaCreateContact)], updateFavorite)
 
 
 module.exports = router
