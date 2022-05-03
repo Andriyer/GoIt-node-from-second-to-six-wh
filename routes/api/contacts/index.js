@@ -1,7 +1,7 @@
 const express = require('express')
-const {listContacts, getContactById, addContact, removeContact, updateContact, updateFavorite} = require('../../controllers/contacts')
+const {listContacts, getContactById, addContact, removeContact, updateContact, updateFavorite} = require('../../../controllers/contacts')
 const {schemaCreateContact, schemaMongoId} = require('./validation-schem')
-const {validateBody, validateParams} = require('../../middlewares/validation');
+const {validateBody, validateParams} = require('../../../middlewares/validation');
 // const {contactSchema } = require('../../models/contact')
 
 const router = express.Router()
