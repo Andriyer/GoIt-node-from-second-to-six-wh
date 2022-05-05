@@ -11,7 +11,7 @@ class authService {
         if (user) {
             throw new CustomError (HTTP_STATUS_CODE.CONFLICT, 'User already exists')
         }
-        const newUser = Users.create(body)
+        const newUser = await Users.create(body)
         
         return {
             id: newUser.id,
@@ -20,8 +20,38 @@ class authService {
             role: newUser.role
         }
     }
-    async login ({ email, password }) {}
-    async logout (id) {}
+    async login ({ email, password }) {
+        const user = await this.#getUser(email, password)
+        if (!user) {
+            throw new CustomError (HTTP_STATUS_CODE.UNAUTHORIZED, 'Invalid user')
+        }
+        const token = this.#generateToken(user)
+        await Users.updateToken(user.id, token)
+        return {token}
+    }
+
+    async logout (id) {
+        await Users.updateToken(id, null)
+    }
+
+    async #getUser(email, password){
+        const user = await Users.findByEmail(email)
+        if (!user) {
+            return null
+        }
+
+        if (!(await user?.isValidPassword(password))) {
+            return null
+        }
+
+        return user
+    }
+
+    #generateToken(user) {
+        const payload = { id: user.id }
+        const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '2h'})
+        return token
+    }
 }
 
 module.exports = new authService()

@@ -1,4 +1,5 @@
 const authService = require('../../services/auth')
+const {HTTP_STATUS_CODE} = require('../../libs/constants')
 
 const registration = async (req, res) => {
     const user = await authService.create(req.body)

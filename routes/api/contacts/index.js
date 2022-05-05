@@ -2,23 +2,25 @@ const express = require('express')
 const {listContacts, getContactById, addContact, removeContact, updateContact, updateFavorite} = require('../../../controllers/contacts')
 const {schemaCreateContact, schemaMongoId} = require('./validation-schem')
 const {validateBody, validateParams} = require('../../../middlewares/validation');
+const quard = require('../../../middlewares/guard')
+const {wrapper: wrapperError } = require ('../../../middlewares/error-handler')
 // const {contactSchema } = require('../../models/contact')
 
 const router = express.Router()
 
-router.get('/', listContacts)
+router.get('/', quard, wrapperError(listContacts))
 
-router.get('/:contactId', validateParams(schemaMongoId), getContactById)
+router.get('/:contactId', quard, validateParams(schemaMongoId), wrapperError(getContactById))
 
-router.post('/',
+router.post('/', quard,
  validateBody(schemaCreateContact),
  addContact)
 
-router.delete('/:contactId', validateParams(schemaMongoId), removeContact)
+router.delete('/:contactId', quard, validateParams(schemaMongoId), wrapperError(removeContact))
 
-router.put('/:contactId', [validateParams(schemaMongoId), validateBody(schemaCreateContact)], updateContact)
+router.put('/:contactId', quard, [validateParams(schemaMongoId), validateBody(schemaCreateContact)], wrapperError(updateContact))
 
-router.patch('/:contactId/favorite', [validateParams(schemaMongoId), validateBody(schemaCreateContact)], updateFavorite)
+router.patch('/:contactId/favorite', quard, [validateParams(schemaMongoId), validateBody(schemaCreateContact)], wrapperError(updateFavorite))
 
 
 module.exports = router
