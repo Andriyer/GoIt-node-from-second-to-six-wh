@@ -1,53 +1,38 @@
-const contactsRepository = require('../../repository/contacts')
+const contactsService = require ('../../services/contacts')
 
-const listContacts = async (req, res, next) => {
-    const contacts = await contactsRepository.listContacts()
+const listContacts = async (req, res) => {
+    const contacts = await contactsService.getAll(req.query, req.user)
     res.json({ status: 'success', code: 200, payload: {contacts} })
   }
   
-  const getContactById = async (req, res, next) => {
-    const contact = await contactsRepository.getContactById(req.params.contactId)
-    console.log(contact);
-    if (contact){
+  const getContactById = async (req, res) => {
+    const contact = await contactsService.getById(req.params.contactId, req.user)
       res.json({ status: 'success', code: 200, payload: {contact} })
-    }
-    return res.status(404).json({ status: 'error', code: 404, message: 'Not found' })
   }
   
-  const addContact = async (req, res, next) => {
-    const contact = await contactsRepository.addContact(req.body)
+  const addContact = async (req, res) => {
+    const contact = await contactsService.create(req.body, req.user)
     res.status(201).json({ status: 'success', code: 201, payload: {contact} })
   }
 
-  const removeContact = async (req, res, next) => {
-      try{
-    const contact = await contactsRepository.removeContact(req.params.contactId)
+  const removeContact = async (req, res) => {
+    const contact = await contactsService.remove(req.params.contactId, req.user)
     if (contact){
       res.json({ status: 'success', code: 200, payload: {contact} })
     }
-    return res.status(404).json({ status: 'error', code: 404, message: 'Not found' })
-  } catch (err) {
-      next(err)
-  }
 }
   
-  const updateContact = async (req, res, next) => {
-    const contact = await contactsRepository.findByIdAndUpdate(req.params.contactId, req.body)
-    if (contact){
+  const updateContact = async (req, res) => {
+    const contact = await contactsService.update(req.params.contactId, req.body, req.user)
       res.json({ status: 'success', code: 200, payload: {contact} })
-    }
-    return res.status(404).json({ status: 'error', code: 404, message: 'Not found' })
   }
 
-  const updateFavorite = async (req, res, next) => {
-    const contact = await contactsRepository
-    .findByIdAndUpdate(req.params.contactId, req.body)
-    if (contact){
-      res.json({ status: 'success', code: 200, payload: {contact} })
-    }
-    return res.status(404)
-    .json({ status: 'error', code: 404, message: 'Not found' })
+  const updateFavorite = async (req, res) => {
+    const contact = await contactsService
+    .update(req.params.contactId, req.body, req.user)
+    res.json({ status: 'success', code: 200, payload: {contact} })
   }
+
 
     module.exports = {listContacts, 
         getContactById, 
