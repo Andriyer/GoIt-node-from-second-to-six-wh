@@ -1,4 +1,3 @@
-const contactsRepository = require('../../repository/contacts')
 const contactsService = require ('../../services/contacts')
 
 const listContacts = async (req, res) => {
