@@ -2,7 +2,7 @@ const contactsService = require ('../../services/contacts')
 
 const listContacts = async (req, res) => {
     const contacts = await contactsService.getAll(req.query, req.user)
-    res.json({ status: 'success', code: 200, payload: {contacts} })
+    res.json({ status: 'success', code: 200, payload: {...contacts} })
   }
   
   const getContactById = async (req, res) => {
@@ -33,10 +33,17 @@ const listContacts = async (req, res) => {
     res.json({ status: 'success', code: 200, payload: {contact} })
   }
 
+  const getStatistics = async (req, res) => {
+    const result = await contactsService.getStatistics(req.user)
+    return res.json({status: 'success', code: 200, payload: {...result}})
+  }
+
 
     module.exports = {listContacts, 
         getContactById, 
         addContact, 
         removeContact, 
         updateContact, 
-        updateFavorite}
+        updateFavorite,
+        getStatistics,
+      }

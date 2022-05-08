@@ -6,8 +6,21 @@ const SECRET_KEY = process.env.JWT_SECRET_KEY
 
 class contactsService {
     async getAll (query, user) {
-        const contacts = await Contacts.listContacts(query, user)
-        return contacts
+        const {limit=5, skip=0, sortBy, sortByDesc, filter} = query
+        let sortCriteria = null
+        let select = null
+        if (sortBy){
+            sortCriteria = { [sortBy]: 1}
+        }
+        if (sortByDesc){
+            sortCriteria = { [sortByDesc]: -1}
+        }
+        if (filter) {
+            select = filter.split('|').join(' ')
+        }  
+        const result = await Contacts.listContacts({limit, skip, select, sortCriteria}, user)
+        
+        return result
     }
     async getById (id, user ) {
         const contact = await Contacts.getContactById(id, user)
@@ -36,6 +49,11 @@ class contactsService {
             throw new CustomError (HTTP_STATUS_CODE.NOT_FOUND, 'Not Found')
         }
         return contact
+    }
+
+    async getStatistics(user) {
+        const result = await Contacts.getStatistics(user)
+        return result
     }
 }
 module.exports = new contactsService()
