@@ -1,4 +1,3 @@
-const { avatar } = require('../controllers/users')
 const User = require('../models/user')
 
 const findById = async (id) => {

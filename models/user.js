@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 
 const gravatar = require('gravatar')
 const { Schema, model } = mongoose;
-const { role, Role } = require('../libs/constants')
+const { Role } = require('../libs/constants')
 
 const userSchema = new Schema({
         name: {
