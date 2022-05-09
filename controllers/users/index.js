@@ -1,5 +1,11 @@
-const avatar = async (req,res,next) => {
-    res.json({message: 'Avatar update'})
+const {HTTP_STATUS_CODE} = require('../../libs/constants')
+const AvatarService = require('../../services/avatar')
+const LocalStorage = require('../../services/avatar/local-storage')
+
+const avatar = async (req, res, next) => {
+    const avatarService = new AvatarService(LocalStorage, req.file, req.user)
+    const urlOfAvatar = await avatarService.update()
+    res.json({status:'success', code: HTTP_STATUS_CODE.OK, payload: {avatar: urlOfAvatar}})
 }
 
 module.exports = {avatar}
