@@ -14,11 +14,30 @@ const login = async (req, res) => {
     return res.status(HTTP_STATUS_CODE.OK).json({ 
         status: 'success', 
         code: HTTP_STATUS_CODE.OK, 
-        data: { token } }) 
+        data: { ...token } }) 
 }
 const logout = async (req, res) => {
     await authService.logout(req.user.id)
     return res.status(HTTP_STATUS_CODE.NO_CONTENT).json() 
 }
 
-module.exports = {registration, login, logout}
+const verifyUser = async (req, res) => { 
+    const token = req.params.token
+    const user = await authService.verifyUser(token)
+    return res.status(HTTP_STATUS_CODE.OK).json({ 
+        status: 'success', 
+        code: HTTP_STATUS_CODE.OK, 
+        data: { message: `User verified. Welcome ${user.name}` } }) 
+}
+
+
+const reverifyEmail = async (req, res) => { 
+    const{ email } = req.body
+    await authService.reverifyEmail(email)
+    return res.status(HTTP_STATUS_CODE.OK).json({ 
+        status: 'success', 
+        code: HTTP_STATUS_CODE.OK, 
+        data: { message: `Succsess` } })
+}
+
+module.exports = {registration, login, logout, verifyUser, reverifyEmail}
