@@ -2,13 +2,27 @@ const Contacts = require ('../../repository/contacts')
 const {HTTP_STATUS_CODE} = require('../../libs/constants')
 const{ CustomError } = require('../../middlewares/error-handler')
 
-const SECRET_KEY = process.env.JWT_SECRET_KEY
+// const SECRET_KEY = process.env.JWT_SECRET_KEY
 
-class contactsService {
+class ContactsService {
     async getAll (query, user) {
-        const contacts = await Contacts.listContacts(query, user)
-        return contacts
+        const {limit=5, skip=0, sortBy, sortByDesc, filter} = query
+        let sortCriteria = null
+        let select = null
+        if (sortBy){
+            sortCriteria = { [sortBy]: 1}
+        }
+        if (sortByDesc){
+            sortCriteria = { [sortByDesc]: -1}
+        }
+        if (filter) {
+            select = filter.split('|').join(' ')
+        }  
+        const result = await Contacts.listContacts({limit, skip, select, sortCriteria}, user)
+        
+        return result
     }
+
     async getById (id, user ) {
         const contact = await Contacts.getContactById(id, user)
         if (!contact){
@@ -37,5 +51,10 @@ class contactsService {
         }
         return contact
     }
+
+    async getStatistics(user) {
+        const result = await Contacts.getStatistics(user)
+        return result
+    }
 }
-module.exports = new contactsService()
+module.exports = new ContactsService()

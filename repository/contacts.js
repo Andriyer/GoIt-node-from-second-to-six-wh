@@ -1,8 +1,15 @@
 const Contact = require('../models/contact')
+const {Types} =  require('mongoose')
 
-const listContacts = async (query, user) => {
-  const result = await Contact.find({owner: user.id})
-  return result
+// const listContacts = async ({limit, skip, sortCriteria, select}, user) => {
+//   const total = await Contact.countDocuments({ owner: user.id })
+//   const results = await Contact.find({owner: user.id}).select(select).skip(skip).limit(limit).sort(sortCriteria)
+//   return {total, results}
+// }
+
+const listContacts = async ({limit, skip, sortCriteria, select}, user) => {
+  const {docs: contacts, ...rest} = await Contact.paginate({owner: user.id}, {limit, offset:skip, sort:sortCriteria, select})
+  return {contacts, ...rest}
 }
 
 const getContactById = async (contactId, user) => {
@@ -31,6 +38,21 @@ const updateFavorite = async (contactId, body, user) => {
     return result
   }
 
+  const getStatistics = async (user) => {
+    const result = await Contact.aggregate([
+    {  
+      $match: { owner: Types.ObjectId(user.id) }
+    },
+    {
+      $group: {
+        _id: '$status',
+        count: {$sum:1}
+      },
+    },
+  ])
+    return result
+  }
+
 module.exports = {
   listContacts,
   getContactById,
@@ -38,4 +60,5 @@ module.exports = {
   addContact,
   updateContact,
   updateFavorite,
+  getStatistics
 }
