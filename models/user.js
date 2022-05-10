@@ -1,5 +1,7 @@
 const mongoose = require ('mongoose');
 const bcrypt = require('bcryptjs')
+const { v4: uuidv4 } = require('uuid');
+// const { randomUUID } = require('crypto')
 
 const gravatar = require('gravatar')
 const { Schema, model } = mongoose;
@@ -38,6 +40,18 @@ const userSchema = new Schema({
           default:function(){
             return gravatar.url(this.email, {s:'250'}, true)
           }
+        },
+        cloudId:{
+          type: String,
+          default: null
+        },
+        isVerify:{
+          type: Boolean,
+          default: false
+        },
+        verifyEmailToken:{
+          type: String,
+          default: uuidv4()
         }
       },
 {

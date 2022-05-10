@@ -1,7 +1,10 @@
 const jwt = require('jsonwebtoken')
 const Users = require ('../../repository/users')
-const {HTTP_STATUS_CODE} = require('../../libs/constants')
+const { HTTP_STATUS_CODE } = require('../../libs/constants')
 const{ CustomError } = require('../../middlewares/error-handler')
+const EmailService = require('../email/service')
+const SenderNodemailer = require('../email/senders/nodemailer-sender')
+const SenderSendGrid = require('../email/senders/sendgrid-sender')
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY
 
@@ -11,7 +14,16 @@ class authService {
         if (user) {
             throw new CustomError (HTTP_STATUS_CODE.CONFLICT, 'User already exists')
         }
+
         const newUser = await Users.create(body)
+
+        const sender = new SenderSendGrid()
+        const emailService = new EmailService(sender)
+        try {
+            await emailService.sendEmail(newUser.email, newUser.name, newUser.verifyEmailToken)
+        } catch (error) {
+            console.log(error);
+        }
         
         return {
             id: newUser.id,
@@ -21,12 +33,10 @@ class authService {
             avatar: newUser.avatar
         }
     }
+
     async login ({ email, password }) {
-        const user = await this.#getUser(email, password)
-        if (!user) {
-            throw new CustomError (HTTP_STATUS_CODE.UNAUTHORIZED, 'Invalid user')
-        }
-        const token = this.#generateToken(user)
+        const user = await this.getUser(email, password)
+        const token = this.generateToken(user)
         await Users.updateToken(user.id, token)
         return {token}
     }
@@ -35,24 +45,63 @@ class authService {
         await Users.updateToken(id, null)
     }
 
-    async #getUser(email, password){
+    async getUser(email, password){
         const user = await Users.findByEmail(email)
+        console.log(user);
         if (!user) {
-            return null
+            throw new CustomError (HTTP_STATUS_CODE.NOT_FOUND, 'User not found')
         }
 
         if (!(await user?.isValidPassword(password))) {
-            return null
+            throw new CustomError (HTTP_STATUS_CODE.UNAUTHORIZED, 'Invalid user')
         }
 
+        if(!user?.isVerify){
+            throw new CustomError(HTTP_STATUS_CODE.BAD_REQUEST, 'User not verified')
+        }
         return user
     }
 
-    #generateToken(user) {
+    generateToken(user) {
         const payload = { id: user.id }
         const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '2h'})
         return token
     }
+
+    async verifyUser(token) {
+        const user = await Users.findByToken(token)
+        if(!user) {
+            throw new CustomError(HTTP_STATUS_CODE.BAD_REQUEST, 'Invalid token')
+        }
+        if(user && user.isVerify) {
+            throw new CustomError(HTTP_STATUS_CODE.BAD_REQUEST, 'User already verified')
+        }
+        await Users.verifyUser(user.id)
+        return user
+    }
+
+    async reverifyEmail (email) {
+        const user = await Users.findByEmail(email)
+        if(!user) {
+            throw new CustomError(HTTP_STATUS_CODE.NOT_FOUND, 'User with email not found')
+        }
+        if(user && user.isVerify) {
+            throw new CustomError(HTTP_STATUS_CODE.BAD_REQUEST, 'User already verified')
+        }
+        
+        const sender = new SenderNodemailer()
+        const emailService = new EmailService(sender)
+        try {
+            await emailService.sendEmail(user.email, user.name, user.verifyEmailToken)
+        } catch (error) {
+            console.log(error);
+            throw new CustomError(
+                HTTP_STATUS_CODE.SERVICE_UNAVAILABLE, 
+                'Error sending email',
+            )
+        }
+    }
 }
 
+// eslint-disable-next-line new-cap
 module.exports = new authService()

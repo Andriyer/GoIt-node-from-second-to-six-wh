@@ -12,7 +12,10 @@ const HTTP_STATUS_CODE = {
     NOT_FOUND: 404,
     CONFLICT: 409,
     INTERNAL_SERVER_ERROR: 500,
+    SERVICE_UNAVAILABLE: 503,
 }
 
+const FOLDER_CLOUD = 'avatars'
 
-module.exports = { Role,  HTTP_STATUS_CODE}
+
+module.exports = { Role,  HTTP_STATUS_CODE, FOLDER_CLOUD}
