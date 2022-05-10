@@ -6,8 +6,6 @@ const EmailService = require('../email/service')
 const SenderNodemailer = require('../email/senders/nodemailer-sender')
 const SenderSendGrid = require('../email/senders/sendgrid-sender')
 
-
-
 const SECRET_KEY = process.env.JWT_SECRET_KEY
 
 class authService {
@@ -49,6 +47,7 @@ class authService {
 
     async getUser(email, password){
         const user = await Users.findByEmail(email)
+        console.log(user);
         if (!user) {
             throw new CustomError (HTTP_STATUS_CODE.NOT_FOUND, 'User not found')
         }
@@ -60,7 +59,6 @@ class authService {
         if(!user?.isVerify){
             throw new CustomError(HTTP_STATUS_CODE.BAD_REQUEST, 'User not verified')
         }
-
         return user
     }
 

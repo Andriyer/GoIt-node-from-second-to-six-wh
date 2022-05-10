@@ -1,3 +1,4 @@
+
 const { HTTP_STATUS_CODE } = require('../libs/constants')
 
 class CustomError extends Error {
@@ -29,6 +30,7 @@ const wrapper = (fn) => async (req, res, next) => {
                         code: error.statusCode,
                         message: error.message
                     })
+            // eslint-disable-next-line no-fallthrough
             default:
                 next (error)
                 break;

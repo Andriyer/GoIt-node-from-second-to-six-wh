@@ -3,7 +3,7 @@ const Mailgen = require('mailgen')
 class EmailService {
     constructor(sender) {
         this.sender = sender
-        this.link = 'http//:localhost:3000'
+        this.link = 'https://90fd-188-163-121-219.eu.ngrok.io'
         this.mailgen = new Mailgen({
             theme: 'default',
             product: {
@@ -23,7 +23,7 @@ class EmailService {
                     button: {
                         color: '#22BC66', // Optional action button color
                         text: 'Confirm your account',
-                        link: `${this.link}/api/auth/verify-email/${token}`
+                        link: `${this.link}/api/auth/verify-email/${token}`,
                     }
                 },
                 outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'

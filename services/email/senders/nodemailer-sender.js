@@ -5,7 +5,7 @@ class SenderNodemailer {
             this.config = {
             host: "smtp.meta.ua",
             port: 465,
-            secure: false, // true for 465, false for other ports
+            secure: true, // true for 465, false for other ports
             auth: {
                 user: process.env.USER_NODEMAILER, // generated ethereal user
                 pass: process.env.PASSWORD_NODEMAILER, // generated ethereal password
